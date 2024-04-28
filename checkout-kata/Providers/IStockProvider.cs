@@ -5,6 +5,6 @@ namespace checkout_kata.Providers
 {
     public interface IStockProvider
     {
-        Task<StockItem?> GetStockItem(string sku);
+        StockItem? GetStockItem(string sku);
     }
 }

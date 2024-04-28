@@ -9,24 +9,24 @@ namespace checkout_kata_tests.ServiceTests
     public class CheckoutTests
     {
         private readonly Mock<IStockProvider> mockStockProvider;
-        private readonly Mock<IPrintMessage> mockPrintMessage;
+        private readonly Mock<IMessageHelper> mockMessageHelper;
         private readonly Checkout checkout;
 
         public CheckoutTests()
         {
             mockStockProvider = new Mock<IStockProvider>();
-            mockPrintMessage = new Mock<IPrintMessage>();
+            mockMessageHelper = new Mock<IMessageHelper>();
 
             mockStockProvider
                 .Setup(_ => _.GetStockItem(It.IsAny<string>()))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "A",
                     UnitPrice = 10,
                     SpecialPrice = ""
                 });
 
-            checkout = new Checkout(mockStockProvider.Object, mockPrintMessage.Object);
+            checkout = new Checkout(mockStockProvider.Object, mockMessageHelper.Object);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace checkout_kata_tests.ServiceTests
             // Arrange
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "A",
                     UnitPrice = 10,
@@ -56,13 +56,13 @@ namespace checkout_kata_tests.ServiceTests
             // Arrange
             mockStockProvider
                 .Setup(_ => _.GetStockItem(It.IsAny<string>()))
-                .Returns(Task.FromResult<StockItem?>(null));
+                .Returns(value: null);
 
             // Act
             checkout.Scan("A");
 
             // Assert
-            mockPrintMessage.Verify(_ => _.Print(It.IsAny<string>()), Times.Once); //TODO - put correct error message in
+            mockMessageHelper.Verify(_ => _.Print(It.IsAny<string>()), Times.Once); //TODO - put correct error message in
             Assert.Empty(checkout.scannedItems);
         }
 
@@ -72,7 +72,7 @@ namespace checkout_kata_tests.ServiceTests
             // Arrange
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "A",
                     UnitPrice = -1,
@@ -83,7 +83,7 @@ namespace checkout_kata_tests.ServiceTests
             checkout.Scan("A");
 
             // Assert
-            mockPrintMessage.Verify(_ => _.Print(It.IsAny<string>()), Times.Once); //TODO - put correct error message in
+            mockMessageHelper.Verify(_ => _.Print(It.IsAny<string>()), Times.Once); //TODO - put correct error message in
             Assert.Empty(checkout.scannedItems);
         }
 
@@ -93,7 +93,7 @@ namespace checkout_kata_tests.ServiceTests
             // Arrange
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "A",
                     UnitPrice = 10,
@@ -104,7 +104,7 @@ namespace checkout_kata_tests.ServiceTests
             checkout.Scan("A");
 
             // Assert
-            mockPrintMessage.Verify(_ => _.Print(It.IsAny<string>()), Times.Once); //TODO - put correct error message in
+            mockMessageHelper.Verify(_ => _.Print(It.IsAny<string>()), Times.Once); //TODO - put correct error message in
             Assert.Empty(checkout.scannedItems);
         }
 
@@ -130,7 +130,7 @@ namespace checkout_kata_tests.ServiceTests
             // Assert
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "A",
                     UnitPrice = 10,
@@ -139,7 +139,7 @@ namespace checkout_kata_tests.ServiceTests
 
             mockStockProvider
                 .Setup(_ => _.GetStockItem("B"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "B",
                     UnitPrice = 12,
@@ -165,7 +165,7 @@ namespace checkout_kata_tests.ServiceTests
             // Assert
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "A",
                     UnitPrice = 10,
@@ -174,7 +174,7 @@ namespace checkout_kata_tests.ServiceTests
 
             mockStockProvider
                 .Setup(_ => _.GetStockItem("B"))
-                .ReturnsAsync(new StockItem()
+                .Returns(new StockItem()
                 {
                     SKU = "B",
                     UnitPrice = 12,

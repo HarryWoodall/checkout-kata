@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace checkout_kata.Helpers
 {
-    public interface IPrintMessage
+    public class MessageHelper : IMessageHelper
     {
-        void Print(string message);
+        public void Print(string message)
+        {
+            Console.WriteLine(message);
+        }
     }
 }

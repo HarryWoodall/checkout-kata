@@ -7,11 +7,11 @@ namespace checkout_kata.Services
     public class Checkout : ICheckout
     {
         private IStockProvider stockProvider;
-        private IPrintMessage printMessage;
+        private IMessageHelper printMessage;
 
         public List<StockItem> scannedItems = new List<StockItem>();
 
-        public Checkout(IStockProvider stockProvider, IPrintMessage printMessage)
+        public Checkout(IStockProvider stockProvider, IMessageHelper printMessage)
         {
             this.stockProvider = stockProvider;
             this.printMessage = printMessage;

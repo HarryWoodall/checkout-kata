@@ -2,6 +2,6 @@
 {
     public interface IStockPricesStore
     {
-        public Task<string> ReadData(string fileName);
+        public string ReadData(string fileName);
     }
 }
