@@ -1,5 +1,7 @@
 # Checkout kata
 
+A soloution to the checkout kata written as a console application using C#.
+
 ### Design
 The solution contains 2 projects, checkout-kata and checkout-kata-tests
 
