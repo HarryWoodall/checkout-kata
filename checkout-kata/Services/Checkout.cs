@@ -13,10 +13,10 @@ namespace checkout_kata.Services
 
         public List<StockItem> scannedItems = new List<StockItem>();
 
-        public Checkout(IStockProvider stockProvider, IMessageHelper printMessage)
+        public Checkout(IStockProvider stockProvider, IMessageHelper messageHelper)
         {
             this.stockProvider = stockProvider;
-            this.messageHelper = printMessage;
+            this.messageHelper = messageHelper;
         }
 
         public int GetTotalPrice()

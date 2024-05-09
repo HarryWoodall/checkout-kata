@@ -112,7 +112,7 @@ namespace checkout_kata_tests.ServiceTests
         [InlineData(45, new string[] { "A", "B", "A", "B", "A", "B" })]
         public void CheckoutGetTotalPrice_ShouldCorrectlyCalculatePrice_IfItemHasSpecialPrice(int expectedPrice, string[] items)
         {
-            // Assert
+            // Arrange
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
                 .Returns(new StockItem()
@@ -147,7 +147,7 @@ namespace checkout_kata_tests.ServiceTests
         [InlineData(66, new string[] { "A", "B", "A", "B", "A", "B" })]
         public void CheckoutGetTotalPrice_ShouldCorrectlyCalculatePrice_IfItemHasNoSpecialPrice(int expectedPrice, string[] items)
         {
-            // Assert
+            // Arrange
             mockStockProvider
                 .Setup(_ => _.GetStockItem("A"))
                 .Returns(new StockItem()
@@ -155,6 +155,41 @@ namespace checkout_kata_tests.ServiceTests
                     SKU = "A",
                     UnitPrice = 10,
                     SpecialPrice = ""
+                });
+
+            mockStockProvider
+                .Setup(_ => _.GetStockItem("B"))
+                .Returns(new StockItem()
+                {
+                    SKU = "B",
+                    UnitPrice = 12,
+                    SpecialPrice = ""
+                });
+
+            // Act
+            items.ToList().ForEach(item => checkout.Scan(item));
+            int result = checkout.GetTotalPrice();
+
+            // Assert
+            Assert.Equal(expectedPrice, result);
+        }
+
+        [Theory]
+        [InlineData(22, new string[] { "A", "B" })]
+        [InlineData(27, new string[] { "A", "A", "B" })]
+        [InlineData(54, new string[] { "A", "A", "A", "A", "B", "B" })]
+        [InlineData(51, new string[] { "A", "A", "B", "B", "B" })]
+        [InlineData(61, new string[] { "A", "B", "A", "B", "A", "B" })]
+        public void CheckoutGetTotalPrice_ShouldCorrectlyCalculatePrice_IfSomeItemsHaveSpecialPrice(int expectedPrice, string[] items)
+        {
+            // Arrange
+            mockStockProvider
+                .Setup(_ => _.GetStockItem("A"))
+                .Returns(new StockItem()
+                {
+                    SKU = "A",
+                    UnitPrice = 10,
+                    SpecialPrice = "2 for 15"
                 });
 
             mockStockProvider
@@ -186,6 +221,43 @@ namespace checkout_kata_tests.ServiceTests
 
             // Assert
             Assert.Empty(checkout.scannedItems);
+        }
+
+        [Fact]
+        public void CheckoutGetTotalPrice_ShouldGiveDifferentPrice_IfPriceDataHasChangedBetweenCheckoutSessions()
+        {
+            mockStockProvider
+                .Setup(_ => _.GetStockItem("A"))
+                .Returns(new StockItem()
+                {
+                    SKU = "A",
+                    UnitPrice = 10,
+                    SpecialPrice = ""
+                });
+
+            checkout.Scan("A");
+            checkout.Scan("A");
+            checkout.Scan("A");
+
+            var firstTotalPrice = checkout.GetTotalPrice();
+
+            mockStockProvider
+                .Setup(_ => _.GetStockItem("A"))
+                .Returns(new StockItem()
+                {
+                    SKU = "A",
+                    UnitPrice = 15,
+                    SpecialPrice = ""
+                });
+
+            checkout.Scan("A");
+            checkout.Scan("A");
+            checkout.Scan("A");
+
+            var secondTotalPrice = checkout.GetTotalPrice();
+
+            Assert.Equal(30, firstTotalPrice);
+            Assert.Equal(45, secondTotalPrice);
         }
     }
 }
